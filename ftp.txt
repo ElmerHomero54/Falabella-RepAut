@@ -1,0 +1,6 @@
+open maquinaCM
+user fulano
+passw mengano
+cd /ruta/<pais>
+mget *.*
+quit

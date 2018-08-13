@@ -1,0 +1,16 @@
+      function toUSDate(d) { return substr(d,5,2)"/"substr(d,7,2)"/"substr(d,1,4) }
+      function toUSTime(t) { sub(":","",t); sub(":","",t); return t }
+      function toTimeExcel(t) { return t/86400 }
+      function USTime2ExcelTime(t) { return toTimeExcel((substr(t,1,2)*3600)+(substr(t,3,2)*60)+substr(t,5,2)) }
+      function day2sec(s) { return s * 86400 }
+      function toTimeUnix(day,hour) {
+          yr=substr(day,1,4);mt=substr(day,5,2);dy=substr(day,7,2)
+          hr=substr(hour,1,2); mn=substr(hour,3,2); sg=substr(hour,5,2)
+          return mktime(yr s mt s dy s hr s mn s sg)}
+      function ltrim(sx) { sub(/^[ \t\r\n]+/, "", sx); return sx }
+      function rtrim(sx) { sub(/[ \t\r\n]+$/, "", sx); return sx }
+      function trim(sx) { return rtrim(ltrim(sx)); }
+      function readFields(){
+         q=split(l,a,","); p=1
+         for (i=1;i<=q;i++) { field[i] = substr($0,p,a[i]); field[i]=trim(field[i]); p = p + a[i] }
+         return q }
