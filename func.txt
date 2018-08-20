@@ -1,12 +1,13 @@
       function toUSDate(d) { return substr(d,5,2)"/"substr(d,7,2)"/"substr(d,1,4) }
+      function toISODate(d) { return substr(d,7,4) substr(d,4,2) substr(d,1,2) }
       function toUSTime(t) { sub(":","",t); sub(":","",t); return t }
       function toTimeExcel(t) { return t/86400 }
       function USTime2ExcelTime(t) { return toTimeExcel((substr(t,1,2)*3600)+(substr(t,3,2)*60)+substr(t,5,2)) }
       function day2sec(s) { return s * 86400 }
-      function toTimeUnix(day,hour) {
+      function toTimeUnix(day,hour) { ss=" "
           yr=substr(day,1,4);mt=substr(day,5,2);dy=substr(day,7,2)
           hr=substr(hour,1,2); mn=substr(hour,3,2); sg=substr(hour,5,2)
-          return mktime(yr s mt s dy s hr s mn s sg)}
+          return mktime(yr ss mt ss dy ss hr ss mn ss sg)}
       function ltrim(sx) { sub(/^[ \t\r\n]+/, "", sx); return sx }
       function rtrim(sx) { sub(/[ \t\r\n]+$/, "", sx); return sx }
       function trim(sx) { return rtrim(ltrim(sx)); }
