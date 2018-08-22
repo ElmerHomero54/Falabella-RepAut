@@ -66,8 +66,8 @@ cat $DAT/$nomLST |
      else
         n++
      cve = $1 substr($2,1,6) # -- La clave es el job y el año/mes
-     diff_inic+=toTimeUnix($3,$4)
-     diff_finis+=toTimeUnix($5,$6) }
+       diff_inic+=USTime2ExcelTime($4)
+       diff_finis+=USTime2ExcelTime($6) }
    END{printf("%s@%s@%12.8f@%12.8f\n",job,mes,diff_inic/n,diff_finis/n)}' |
    sed '1d' > $DAT/t1_$pais.txt
 # --
@@ -80,8 +80,8 @@ cat $DAT/t1_$pais.txt |
       NF==1 {print;ant=$1}
       NF>1 {if(ant!=$1) print;ant=$1}
       END{if(ant!=$1) print}' |
-   awk -F'@' '@include "'$EXE'/func.txt"
-   { print $1 FS strftime("%H%M%S", $2) }' |
+   #awk -F'@' '@include "'$EXE'/func.txt"
+   #{ print $1 FS strftime("%H%M%S", $2) }' |
    sort -t'@' -nk 1,1 |
    awk -F'@' -v nm=12 -v odate=$ODATE '
       BEGIN{s=FS
@@ -114,7 +114,11 @@ for dat in $(cat $DAT/grupos.txt | grep '^'$pais'#G@'); do
    paste -d'@' $DAT/t1_mens $DAT/t2_mens |
       awk -F'@' 'BEGIN{s=FS}
       { ji[$1]=$2;jf[$3]=$4 }
-      END{for(i in ji) if(ji[i]!="" && jf[i]!="") printf("%s@%8.8f\n",i,jf[i] - ji[i]) }' |
+      END{for(i in ji)
+             if(ji[i]!="" && jf[i]!="") {
+                if(jf[i]<ji[i]) jf[i]=jf[i]+1
+                printf("%s@%8.8f\n",i,jf[i] - ji[i]) 
+             } }' |
       awk -F'@' -v nm=12 -v odate=$ODATE '
          BEGIN{s=FS
             yr=substr(odate,1,4);mt=substr(odate,5,2)+0
