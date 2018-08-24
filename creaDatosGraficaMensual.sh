@@ -151,20 +151,16 @@ cat $DAT/tmpMensual_$pais.txt |
    BEGIN{s=FS;q=split(rango,cve,"@")}
    NR>3 { for(i=1;i<=NF;i++) print NR-3 s cve[i] s $i }' > $DAT/tma1
 # --
-# -- Obtiene cuantos datos hay por fecha
-nf=$(head -1 $DAT/dat_men_${pais}_sat.txt | awk -F'@' '{print NF-1}')
-# --
 # -- Busca los datos mensuales anteriores
-#cat $DAT/dat_men_${pais}_sat.txt |
 cat $DAT/dat_men_${pais}_sat.txt |
    awk -F'@' -v ini=$ini -v fin=$fin '{ if($1>=ini && $1<=fin) print }' |
-   awk -F'@' -v nm=12 -v rango=$rango -v nf=$nf '
+   awk -F'@' -v nm=12 -v rango=$rango -v nf=$(head -1 $DAT/dat_men_${pais}_sat.txt | awk -F'@' '{print NF-1}') '
    BEGIN{ s=FS;cr=""; for(i=1;i<=nf;i++) cr=cr"@0"; cr=substr(cr,2)
       q=split(rango,cve,"@");for(i=1;i<=q;i++) a[cve[i]]=cr }
    { d="";for(i=2;i<=NF;i++) d=d s $i; d=substr(d,2); a[$1]=d }
    END{for(i in a) print i s a[i]}' |
    awk -F'@' '@include "'$EXE'/func.txt"
-      { for(i=2;i<NF;i++) print i-1 FS $1 FS USTime2ExcelTime($i) }' |
+      { for(i=2;i<NF;i++) printf("%d%s%s%s%f\n",i-1,FS,$1,FS,USTime2ExcelTime($i)) }' | #print i-1 FS $1 FS USTime2ExcelTime($i) }' |
    sort -t'@' -nk1,1 > $DAT/tma2
 # --
 # --
@@ -175,7 +171,16 @@ paste -d'@' $DAT/tma1 $DAT/tma2 |
    awk -F'@' '{if(ant!=$1) { print substr(sal,2); sal=""; ant=$1 }
       sal=sal FS $3 }
    END{print substr(sal,2)}' |
-   sed '1d' >> $DAT/tmpMensual_${pais}_2.txt
+   sed '1d' |
+   awk -F'@' '{ print }
+   NR>4 { for(i=1;i<=NF;i++) sum[i]+=$i }
+   END{for(i=1;i<=NF;i++) printf("%f%s",sum[i]+$i,FS); printf("\n")}' >> $DAT/tmpMensual_${pais}_2.txt
 # --
+        cp $DAT/tmpMensual_$pais.txt $DAT/tma3
 cp $DAT/tmpMensual_${pais}_2.txt $DAT/tmpMensual_$pais.txt
-rm -f $DAT/tmpMensual_${pais}_2.txt
+########rm -f $DAT/tmpMensual_${pais}_2.txt
+        echo "********************************************************"
+        cat $DAT/tma3
+        echo "********************************************************"
+        cat $DAT/tmpMensual_${pais}_2.txt
+        echo "********************************************************"
