@@ -178,9 +178,4 @@ paste -d'@' $DAT/tma1 $DAT/tma2 |
 # --
         cp $DAT/tmpMensual_$pais.txt $DAT/tma3
 cp $DAT/tmpMensual_${pais}_2.txt $DAT/tmpMensual_$pais.txt
-########rm -f $DAT/tmpMensual_${pais}_2.txt
-        echo "********************************************************"
-        cat $DAT/tma3
-        echo "********************************************************"
-        cat $DAT/tmpMensual_${pais}_2.txt
-        echo "********************************************************"
+rm -f $DAT/tmpMensual_${pais}_2.txt
