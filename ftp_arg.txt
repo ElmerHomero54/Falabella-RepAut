@@ -1,6 +1,6 @@
 open maquinaCM
 user fulano
 passw mengano
-cd /ruta/<pais>
+cd /ruta/arg
 mget *.*
 quit

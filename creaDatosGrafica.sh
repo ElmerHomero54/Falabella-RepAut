@@ -17,7 +17,7 @@ rm -f $DAT/t2
 # -- Siempre el ODATE sera la final. La inicial son n dias antes
 fi=$(awk -v odate=$ODATE -v nDias=$nDias 'BEGIN{s= " "; print strftime("%Y%m%d", toTimeUnix(odate,"130001") - day2sec(nDias-1))} @include "func.txt"')
 echo $fi | awk '@include "func.txt"
-  {print toUSDate($0)}' | sed 's/$'"/`echo \\\r`/" > $DAT/$nomDuracion
+  {print toUSDate($0)}' > $DAT/$nomDuracion
 # --
 ff=$ODATE
 # --
@@ -34,7 +34,7 @@ cat $DAT/t0 | awk -F'@' '{if($2!="" && $3!="") print}' | sort -rut'@' -k 1,1 | s
    awk -F'@' -v fi=$fi -v ff=$ff -v nDias=$nDias '@include "func.txt"
    BEGIN{s=" "; r[fi]=0; r[ff]=0; t0=fi; for(i=2;i<=nDias;i++) { t=strftime("%Y%m%d", toTimeUnix(t0,"000001") + day2sec(1)); r[t]=0; t0=t } }
    { r[$1]=USTime2ExcelTime($3) }
-   END{for(i in r) printf("%s@",r[i]); printf("\n")}' | sed 's/$'"/`echo \\\r`/" >> $DAT/$nomDuracion
+   END{for(i in r) printf("%s@",r[i]); printf("\n")}' >> $DAT/$nomDuracion
 # --
 # -- Genera los datos de duracion por rango de fechas
 for dat in $(cat $DAT/grupos.txt | grep '^'$pais'#G#'); do
@@ -73,10 +73,9 @@ for dat in $(cat $DAT/grupos.txt | grep '^'$pais'#G#'); do
          awk -F'@' -v fi=$fi -v ff=$ff -v nDias=$nDias -v gpo=$gpo '@include "func.txt"
          BEGIN{s=" "; r[fi]=0; r[ff]=0; t0=fi; for(i=2;i<=nDias;i++) { t=strftime("%Y%m%d", toTimeUnix(t0,"000001") + day2sec(1)); r[t]=0; t0=t } }
          { r[$1]=$2 }
-         END{printf("#%s@",gpo);for(i in r) printf("%s@",r[i]); printf("\n")}' |
-         sed 's/$'"/`echo \\\r`/" >> $DAT/$nomDuracion
+         END{printf("#%s@",gpo);for(i in r) printf("%s@",r[i]); printf("\n")}' >> $DAT/$nomDuracion
    else
-      awk -F'@' -v nDias=$nDias -v gpo=$gpo 'BEGIN{printf("#%s@",gpo);for(i=1;i<=nDias+1;i++) printf("0@"); print}'| sed 's/$'"/`echo \\\r`/" >> $DAT/$nomDuracion
+      awk -F'@' -v nDias=$nDias -v gpo=$gpo 'BEGIN{printf("#%s@",gpo);for(i=1;i<=nDias+1;i++) printf("0@"); print}' >> $DAT/$nomDuracion
    fi
 done
 # -- Agrupa por renglones de grafica
@@ -93,4 +92,5 @@ cat $DAT/tma4 |
       else
          print
       ga=gpo }
-   END{ for(i=2;i<=NF;i++) printf("%8.8f%s",sum[i],FS); printf("\n") }' > $DAT/$nomDuracion
+   END{ for(i=2;i<=NF;i++) printf("%8.8f%s",sum[i],FS); printf("\n") }' |
+   sed 's/$'"/`echo \\\r`/" > $DAT/$nomDuracion
