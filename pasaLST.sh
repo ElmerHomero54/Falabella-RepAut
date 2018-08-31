@@ -10,12 +10,13 @@ pais=$1
 # -- Revisa que haya archivos para pasar
 ls -1 $FTP/$pais/*.lst 2>/dev/null
 if [ $? -ne 0 ]; then
+   echo "No hay nuevos reportes LST que trasladar"
    exit 0
 fi
 # -- Hay archivos para procesar
 for a in $(ls -1 $FTP/$pais/*.lst); do
    t1=$(echo $a | awk -F'/' '{print $NF}' | cut -d'.' -f 1)
-   echo "Revisa: "$t1
+   echo "Traspasa: "$t1
    t2=$t1"-*.lst"
    fn=$(ls -1 $REP/$pais/$t2 2>/dev/null | wc -l | awk '{printf("%02d",$0+1)}')
    t3=$t1"-"$fn".lst"

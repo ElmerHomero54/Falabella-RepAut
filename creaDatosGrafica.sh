@@ -1,6 +1,7 @@
 # --
 EXE="/cygdrive/c/Falabella/AutRep/exe"
 DAT="/cygdrive/c/Falabella/AutRep/dat"
+LOG="/cygdrive/c/Falabella/AutRep/log"
 # --
 pais=$1
 ODATE=$2
@@ -8,6 +9,9 @@ nDias=22
 # --
 nomLST="datosDiarios_"$pais".txt"
 nomDuracion="datGrafic.txt"
+arcLOG=$LOG/log_$odate.txt
+# --
+echo $(date '+%d-%m-%Y %H:%M:%S,00')" : creaDatosGrafica.sh. Inicio" | sed 's/$'"/`echo \\\r`/" >> $arcLOG
 # --
 rm -f $DAT/$nomDuracion
 rm -f $DAT/t1
@@ -20,6 +24,8 @@ echo $fi | awk '@include "func.txt"
   {print toUSDate($0)}' > $DAT/$nomDuracion
 # --
 ff=$ODATE
+# --
+echo "Para "$pais" se crearan datos desde "$fi" hasta "$ff
 # --
 rm -f $DAT/t0
 # -- Busca la hora final de la malla
@@ -38,6 +44,9 @@ cat $DAT/t0 | awk -F'@' '{if($2!="" && $3!="") print}' | sort -rut'@' -k 1,1 | s
 # --
 # -- Genera los datos de duracion por rango de fechas
 for dat in $(cat $DAT/grupos.txt | grep '^'$pais'#G#'); do
+   gpo=$(echo $dat | cut -d'@' -f 1 | cut -d'#' -f 3)
+   echo "Se leen datos para el renglon de grafica: "$gpo
+   echo $(date '+%d-%m-%Y %H:%M:%S,00')" : creaDatosGrafica.sh. Se leen datos para renglon "$gpo | sed 's/$'"/`echo \\\r`/" >> $arcLOG
    # -- Busca los jobs de inicio y fin para el grupo
    ini=$(echo $dat | cut -d'@' -f 3)
    # -- Busca los tiempos de proceso de los jobs de inicio y fin
@@ -63,8 +72,6 @@ for dat in $(cat $DAT/grupos.txt | grep '^'$pais'#G#'); do
    # --
    # -- Si hallo los tiempos, calcula la duracion
    if [ $n1 -ne 0 ] && [ $n2 -ne 0 ] && [ $n1 -eq $n2 ]; then
-      # -- Lee el numero de renglon de grafica que le corresponde
-      gpo=$(echo $dat | cut -d'@' -f 1 | cut -d'#' -f 3)
       # -- Calcula la diferencia de tiempo entre inicio y fin
       paste -d'@' $DAT/t1 $DAT/t2 |
          awk -F'@' -v odate=$ODATE 'BEGIN{s=" "} @include "func.txt"
@@ -94,3 +101,5 @@ cat $DAT/tma4 |
       ga=gpo }
    END{ for(i=2;i<=NF;i++) printf("%8.8f%s",sum[i],FS); printf("\n") }' |
    sed 's/$'"/`echo \\\r`/" > $DAT/$nomDuracion
+# --
+echo $(date '+%d-%m-%Y %H:%M:%S,00')" : creaDatosGrafica.sh. Fin" | sed 's/$'"/`echo \\\r`/" >> $arcLOG

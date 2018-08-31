@@ -1,27 +1,24 @@
-rem ---
 echo off
 rem ---
-set EXE=C:\Falabella\AutRep\exe
-set DAT=C:\Falabella\AutRep\dat
-set FMT=%DAT%\fmt
-set OUT=%DAT%\out
+call setVar.bat
+rem --
+echo "--------------------------------------------------------------------" >> %arcLOG%
+echo %date% %time% : creaGrafica.bat. Inicio con %1 y %2 >> %arcLOG%
 rem ---
 cd %EXE%
 rem ---
 rem --- Parametros: <pais> <odate>
 rem ---
-rem --- FTP de datos de Control-M
-echo Prepara FTP para reportes LST
-copy %EXE%\ftp.txt %EXE%\ftp_%1.txt
-sed -i "s/<pais>/%1/g" %EXE%\ftp_%1.txt
-echo Busca reportes LST en el servidor de Control-M
-rem        ftp -s:ftp_%1.txt
-rem ---
+rem --- Corre FTP de datos de Control-M
+call traeLST.bat %1 %2
 rem --- Pasa a archivo y genera grafica
+echo Pasa a rutas de respaldo los LST leidos
+C:\cygwin64\bin\bash pasaLST.sh %1
 echo Carga en archivos diarios
-C:\cygwin64\bin\bash traeLST.sh %1
-C:\cygwin64\bin\bash cargaDiario.sh  %1 %2
+C:\cygwin64\bin\bash cargaDiario.sh %1 %2
+echo Crea los datos para generar la grafica
 C:\cygwin64\bin\bash creaDatosGrafica.sh %1 %2
 echo Genera grafica en Excel
-copy %EXE%\Fmt_%1_diario.xlsm %OUT%\%1.xlsm
+copy %EXE%\Fmt_%1_diario.xlsm %OUT%\%1.xlsm >NUL
 start excel %OUT%\%1.xlsm
+echo %date% %time% : creaGrafica.bat. Fin >> %arcLOG%
