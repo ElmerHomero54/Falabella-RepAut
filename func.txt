@@ -1,4 +1,5 @@
       function toUSDate(d) { return substr(d,5,2)"/"substr(d,7,2)"/"substr(d,1,4) }
+      function toEURDate(d) { return substr(d,7,2)"-"substr(d,5,2)"-"substr(d,1,4) }
       function toISODate(d) { return substr(d,7,4) substr(d,4,2) substr(d,1,2) }
       function toUSTime(t) { sub(":","",t); sub(":","",t); return t }
       function toTimeExcel(t) { return t/86400 }

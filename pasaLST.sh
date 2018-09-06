@@ -4,7 +4,7 @@ DAT="/cygdrive/c/Falabella/AutRep/dat"
 REP="/cygdrive/c/Falabella/AutRep/rep"
 FTP="/cygdrive/c/Falabella/AutRep/dat/ftp"
 # --
-pais=$1
+pais=$(echo $1 | awk '{print substr($0,1,3)}')
 # --
 # -- Pasa a la carpeta por pais
 # -- Revisa que haya archivos para pasar

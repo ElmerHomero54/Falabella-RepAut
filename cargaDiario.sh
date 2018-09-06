@@ -4,7 +4,8 @@ DAT="/cygdrive/c/Falabella/AutRep/dat"
 REP="/cygdrive/c/Falabella/AutRep/rep"
 LOG="/cygdrive/c/Falabella/AutRep/log"
 # --
-pais=$1
+#pais=$1
+pais=$(echo $1 | awk '{print substr($0,1,3)}')
 odate=$2
 # --
 arcLOG=$LOG/log_$odate.txt
@@ -27,7 +28,7 @@ echo "Carga de archivos LST"
 # --
 # -- Carga en archivo de datos diarios
 for a in $(echo $lista); do
-   echo $(date '+%d-%m-%Y %H:%M:%S,00')" : cargaDiario.sh. Carga "$a | sed 's/$'"/`echo \\\r`/" >> $arcLOG
+   echo $(date '+%d-%m-%Y %H:%M:%S,00')" : cargaDiario.sh.    Carga "$a | sed 's/$'"/`echo \\\r`/" >> $arcLOG
    echo "Archivo: "$a
    # -- Genera archivo de jobs del dia ODATE
    cat $a |
@@ -40,4 +41,14 @@ for a in $(echo $lista); do
         if(readFields())
            print field[1] s ODATE s toISODate(field[4]) s toUSTime(field[5]) s toISODate(field[6]) s toUSTime(field[7]) s substr(field[8],1,1) s toUSTime(field[9]) s field[10] }' >> $DAT/$nomLST
 done
+# --
+echo $(date '+%d-%m-%Y %H:%M:%S,00')" : cargaDiario.sh.    Elimina datos repetidos y jobs sin finalizar" | sed 's/$'"/`echo \\\r`/" >> $arcLOG
+mv $DAT/$nomLST $DAT/tmp1.txt
+cat $DAT/tmp1.txt |
+   sort -u |
+   awk -F'@' 'BEGIN{s=FS} {if($7=="F") print $1 s $2 s $3 s $4 s $5 s $6 s $7 s $8+0 s $9}' |
+   sort -t'@' -nk 2,2 > $DAT/$nomLST
+# --
+rm -f $DAT/tmp1.txt
+# --
 echo $(date '+%d-%m-%Y %H:%M:%S,00')" : cargaDiario.sh. Fin" | sed 's/$'"/`echo \\\r`/" >> $arcLOG
