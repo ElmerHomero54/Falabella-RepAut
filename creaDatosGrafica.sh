@@ -3,7 +3,8 @@ EXE="/cygdrive/c/Falabella/AutRep/exe"
 DAT="/cygdrive/c/Falabella/AutRep/dat"
 LOG="/cygdrive/c/Falabella/AutRep/log"
 # --
-. lee_lista_dias.sh
+#. lee_lista_dias.sh
+. generaDatosCalendarios.sh
 # --
 pais=$(echo $1 | awk '{print substr($0,1,3)}')
 aplic=$1

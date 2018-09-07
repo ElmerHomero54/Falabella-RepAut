@@ -3,6 +3,8 @@ lee_cambios_horarios() {
    sig=$(echo $2 | awk '{print substr($0,1,4)+1}')
    aHorVerano=$(grep  "v@"$act $EXE/cambiosHorarios_$4.txt | cut -d'@' -f2,3)
    aHorInvierno=$(grep  "i@"$sig $EXE/cambiosHorarios_$4.txt | cut -d'@' -f2,3)
+   horv=$(echo $aHorVerano | cut -d'@' -f 1); nvov=$(echo $aHorVerano | cut -d'@' -f 2)
+   hori=$(echo $aHorInvierno | cut -d'@' -f 1); nvoi=$(echo $aHorInvierno | cut -d'@' -f 2)
 }
 # --
 lee_dias_habiles() {
@@ -17,24 +19,29 @@ lee_dias_habiles() {
       fi
       fx=$(date --date="$ft -1 day" +%Y-%m-%d); ft=$fx
       # -- Falla con cambio de horario. Debe obviarse la fecha de cambio de horario
-      hor=$(echo $aHorVerano | cut -d'@' -f 1); nvo=$(echo $aHorVerano | cut -d'@' -f 2)
-      if [ $ft == $hor ]; then ft=$nvo; fi
-      hor=$(echo $aHorInvierno | cut -d'@' -f 1); nvo=$(echo $aHorInvierno | cut -d'@' -f 2)
-      if [ $ft == $hor ]; then ft=$nvo; fi
+      if [ $ft == $horv ]; then ft=$nvov; fi
+      if [ $ft == $hori ]; then ft=$nvoi; fi
    done
 }
 # --
 lee_todos_dias() {
-   while [ $x -le $3 ]; do
-      dow=$(date -d $ft +%u)
-      echo $ft >> $DAT/tma1; echo $ft"@"$dow >> $DAT/tma2
+   while [ $x -lt $3 ]; do
       x=$(( $x + 1 ))
-      fx=$(date --date="$ft -1 day" +%Y-%m-%d); ft=$fx
+      if [ $ft != $horv ] && [ $ft != $hori ]; then
+         fx=$(date --date="$ft -1 day" +%Y-%m-%d)
+         ft=$fx
+      fi
       # -- Falla con cambio de horario. Debe obviarse la fecha de cambio de horario
-      hor=$(echo $aHorVerano | cut -d'@' -f 1); nvo=$(echo $aHorVerano | cut -d'@' -f 2)
-      if [ $ft == $hor ]; then echo $ft >> $DAT/tma1; ft=$nvo; fi
-      hor=$(echo $aHorInvierno | cut -d'@' -f 1); nvo=$(echo $aHorInvierno | cut -d'@' -f 2)
-      if [ $ft == $hor ]; then echo $ft >> $DAT/tma1; ft=$nvo; fi
+      if [ $ft == $horv ] || [ $ft == $hori ]; then
+         dow=7; echo $ft >> $DAT/tma1; echo $ft"@"$dow >> $DAT/tma2
+         dow=6
+         if [ $ft == $horv ]; then ft=$nvov; fi
+         if [ $ft == $hori ]; then ft=$nvoi; fi
+      else
+         dow=$(date -d $ft +%u)
+      fi
+      echo $ft >> $DAT/tma1
+      echo $ft"@"$dow >> $DAT/tma2
    done
 }
 # --
