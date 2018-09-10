@@ -12,8 +12,9 @@ pais=$4
 function generaDatosCalendarios() {
    cal -m $1 |
       sed '1d' | sed '1d' |
-      grep -v 'enero' | grep -v 'abril' | grep -v 'julio' | grep -v 'octubre' |
-      grep -v 'lu ma' |
+      grep -vi 'enero' | grep -vi 'abril' | grep -vi 'julio' | grep -vi 'octubre' |
+      grep -vi 'january' | grep -vi 'april' | grep -vi 'july' | grep -vi 'october' |
+      grep -vi 'lu ma' | grep -vi 'mo tu' |
       awk -v ano=$1 ' @include "../exe/func.txt" 
       BEGIN{s="@"; inic=-2
              l="2,1,2,1,2,1,2,1,2,1,2,1,2,3,2,1,2,1,2,1,2,1,2,1,2,1,2,3,2,1,2,1,2,1,2,1,2,1,2,1,2"
@@ -28,27 +29,17 @@ function generaDatosCalendarios() {
                  if(i>14 && i<28) mes=inic+1
                  printf("%04d%02d%02d@%d\n",ano,mes,field[i],ds[i]) } } }' |
        sort -t'@' >> $2
-
-echo "0.. recien salido del horno"
-cat $2
-echo "---------------------------------"
 }
 # --
 function lee_dias() {
    rm -f $DAT/tma2
-   rango=$(echo $odate | awk '{ano=substr($0,1,4);print ano","ano+1}')
-echo "RABGO: "$rango
+   rango=$(echo $odate | awk '{ano=substr($0,1,4);print ano-1","ano}')
    for a in $(echo $rango | awk -F',' '{for(i=1;i<=NF;i++) print $i}'); do
-echo "--->"$a
       generaDatosCalendarios $a $DAT/tma2
    done
    # -- Agrega los dias festivos del pais
    touch $EXE/diasFeriados_$pais.txt
    cat $EXE/diasFeriados_$pais.txt | sed 's/-//g' | awk '{print $0"@X"}' > $DAT/tma1
-echo "*************************************************************"
-echo "1...."
-cat $DAT/tma1
-
    join -t'@' $DAT/tma2 $DAT/tma1 -a1 |
      sort -rk 1 |
      awk -F'@' -v odate=$odate -v tip=$calend -v nDias=$nDias '
@@ -64,7 +55,6 @@ cat $DAT/tma1
      BEGIN{d="LUN@MAR@MIE@JUE@VIE@SAB@DOM";split(d,dias,"@")}
      { print "1:"$1; print "2:"dias[$2]" "substr($1,7,2) }' > $DAT/tma1
    # --
-cat $DAT/tma1
    lst=$(grep '^1:' $DAT/tma1 | sed 's/1://g' | awk '{printf("@%s",$0)}' | awk '{print substr($0,2)}')
    dows=$(grep '^2:' $DAT/tma1 | sed 's/2://g' | awk '{printf("@%s",$0)}' | awk '{print substr($0,2)}')
 }

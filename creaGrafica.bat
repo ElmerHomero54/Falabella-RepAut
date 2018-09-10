@@ -26,5 +26,4 @@ del %OUT%\%1.xlsm
 copy %EXE%\Fmt_%1_diario.xlsm %OUT%\%1.xlsm >NUL
 start excel %OUT%\%1.xlsm
 echo %date% %time% : creaGrafica.bat. Fin >> %arcLOG%
-rem -- type %LOG%\tmplog.txt >> %arcLOG%
-rem -- del %LOG%\tmplog.txt
+rem -- Fin del script
